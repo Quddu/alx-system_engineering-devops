@@ -1,5 +1,5 @@
-# Creates a file with content
-file { '/tmp/holberton':
+# This create create a file with the following content
+file { '/tmp/school':
   mode    => '0744',
   owner   => 'www-data',
   group   => 'www-data',
