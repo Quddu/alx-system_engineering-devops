@@ -1,35 +1,30 @@
 #!/usr/bin/python3
-"""
-Checks student output for returning info from REST API
-"""
+'''
+gather employee data from API
+'''
 
+import re
 import requests
 import sys
 
-users_url = "https://jsonplaceholder.typicode.com/users"
-todos_url = "https://jsonplaceholder.typicode.com/todos"
+REST_API = "https://jsonplaceholder.typicode.com"
 
-
-def first_line(id):
-    """ Fetch user name """
-
-    resp = requests.get(users_url).json()
-
-    name = None
-    for i in resp:
-        if i['id'] == id:
-            name = i['name']
-
-    filename = 'student_output'
-
-    with open(filename, 'r') as f:
-        first = f.readline().strip()
-
-    if name in first:
-        print("Employee Name: OK")
-    else:
-        print("Employee Name: Incorrect")
-
-
-if __name__ == "__main__":
-    first_line(int(sys.argv[1])))
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        if re.fullmatch(r'\d+', sys.argv[1]):
+            id = int(sys.argv[1])
+            req = requests.get('{}/users/{}'.format(REST_API, id)).json()
+            task_req = requests.get('{}/todos'.format(REST_API)).json()
+            emp_name = req.get('name')
+            tasks = list(filter(lambda x: x.get('userId') == id, task_req))
+            completed_tasks = list(filter(lambda x: x.get('completed'), tasks))
+            print(
+                'Employee {} is done with tasks({}/{}):'.format(
+                    emp_name,
+                    len(completed_tasks),
+                    len(tasks)
+                )
+            )
+            if len(completed_tasks) > 0:
+                for task in completed_tasks:
+                    print('\t {}'.format(task.get('title')))
