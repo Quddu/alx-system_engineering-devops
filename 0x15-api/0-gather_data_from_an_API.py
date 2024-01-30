@@ -1,32 +1,35 @@
 #!/usr/bin/python3
-"""This script request for employee ID from API
+"""
+Checks student output for returning info from REST API
 """
 
-from sys import argv
 import requests
-from json import load
+import sys
+
+users_url = "https://jsonplaceholder.typicode.com/users"
+todos_url = "https://jsonplaceholder.typicode.com/todos"
+
+
+def first_line(id):
+    """ Fetch user name """
+
+    resp = requests.get(users_url).json()
+
+    name = None
+    for i in resp:
+        if i['id'] == id:
+            name = i['name']
+
+    filename = 'student_output'
+
+    with open(filename, 'r') as f:
+        first = f.readline().strip()
+
+    if name in first:
+        print("Employee Name: OK")
+    else:
+        print("Employee Name: Incorrect")
 
 
 if __name__ == "__main__":
-
-    def make_request(resource, param=None):
-        """It retrieves user from API
-        """
-        url = 'https://jsonplaceholder.typicode.com/'
-        url += resource
-        if param:
-            url += ('?' + param[0] + '=' + param[1])
-
-        rq = requests.get(url)
-        rq = rq.json()
-        return rq
-
-    user = make_request('users', ('id', argv[1]))
-    tasks = make_request('todos', ('userId', argv[1]))
-    tasks_completed = [task for task in tasks if task['completed']]
-
-    print('Employee {} is done with tasks({}/{}):'.format(user[0]['name'],
-                                                          len(tasks_completed),
-                                                          len(tasks)))
-    for task in tasks_completed:
-        print('\t {}'.format(task['title']))
+    first_line(int(sys.argv[1])))
