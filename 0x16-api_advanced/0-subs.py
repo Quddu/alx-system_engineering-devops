@@ -3,21 +3,22 @@
     this module contains the function number_of_subscribers
 '''
 import requests
-from sys import argv
-
+import sys
 
 def number_of_subscribers(subreddit):
     '''
         returns the number of subscribers for a given subreddit
     '''
-    user = {'User-Agent': 'Lizzie'}
-    url = requests.get('https://www.reddit.com/r/{}/about.json'
-                       .format(subreddit), headers=user).json()
+    user_agent = 'Lizzie'
+    url = f'https://www.reddit.com/r/{subreddit}/about.json'
+    headers = {'User-Agent': user_agent}
+    response = requests.get(url, headers=headers)
     try:
-        return url.get('data').get('subscribers')
-    except Exception:
+        data = response.json()['data']
+        return data['subscribers']
+    except KeyError:
         return 0
 
-
-if __name__ == "__main__";
-    number_of_subscribers(argv[1])
+if __name__ == "__main__":
+    subreddit = sys.argv[1]
+    print(number_of_subscribers(subreddit))
